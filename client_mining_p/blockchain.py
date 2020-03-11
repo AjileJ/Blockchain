@@ -116,7 +116,7 @@ class Blockchain(object):
         guess = f"{block_string}{proof}".encode()
         guess_hash = hashlib.sha256(guess).hexdigest()
         
-        return guess_hash[:3] == "000"
+        return guess_hash[:6] == "000000"
 
 
 # Instantiate our Node
@@ -129,7 +129,11 @@ node_identifier = str(uuid4()).replace('-', '')
 blockchain = Blockchain()
 
 
-@app.route('/mine', methods=['GET'])
+@app.route('/last_block', methods=['GET'])
+def last_block():
+        return blockchain.last_block
+
+@app.route('/mine', methods=['POST'])
 def mine():
     # Run the proof of work algorithm to get the next proof
     proof = blockchain.proof_of_work(blockchain.last_block)
@@ -142,6 +146,7 @@ def mine():
     response = {
         "new_block": block
     }
+    # is_valid = blockchain.valid_proof(block)
 
     return jsonify(response), 200
 
